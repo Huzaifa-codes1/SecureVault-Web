@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | SecureVault</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+
+<body>
+
+    <div class="dashboard-layout">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+
+            <div class="brand">
+                <span class="brand-icon">⬡</span>
+                <h2>SecureVault</h2>
+            </div>
+
+            <nav class="sidebar-nav">
+
+                <a href="{{ url_for('dashboard') }}" class="nav-link active">
+                    <span>▦</span> Overview
+                </a>
+
+                <a href="#files" class="nav-link">
+                    <span>▤</span> My Files
+                </a>
+
+                <a href="#backups" class="nav-link">
+                    <span>◷</span> Backups
+                </a>
+
+                <a href="#security" class="nav-link">
+                    <span>♢</span> Security
+                </a>
+
+            </nav>
+
+            <div class="sidebar-bottom">
+
+                <div class="security-status">
+                    <span class="status-dot"></span>
+
+                    <div>
+                        <strong>Your Vault</strong>
+                        <small>Account active</small>
+                    </div>
+                </div>
+
+                <form action="{{ url_for('logout') }}" method="POST">
+                    <button type="submit" class="logout-link">
+                        ↪ Sign Out
+                    </button>
+                </form>
+
+            </div>
+
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <header class="topbar">
+
+                <div>
+                    <p class="eyebrow">YOUR PRIVATE WORKSPACE</p>
+                    <h1>Dashboard</h1>
+                </div>
+
+                <div class="user-profile">
+
+                    <div class="avatar">
+                        {{ user['username'][0]|upper }}
+                    </div>
+
+                    <div class="user-details">
+                        <strong>{{ user['username'] }}</strong>
+                        <small>Vault Member</small>
+                    </div>
+
+                </div>
+
+            </header>
+
+            <!-- Welcome Section -->
+            <section class="welcome-section">
+
+                <div>
+                    <p class="welcome-label">WELCOME BACK</p>
+
+                    <h2>Hello, {{ user['username'] }} 👋</h2>
+
+                    <p>{{ user['email'] }}</p>
+
+                    <p>Your personal space for secure file storage and recovery.</p>
+                </div>
+
+                <div class="welcome-icon">⬡</div>
+
+            </section>
+
+            <!-- Overview Cards -->
+            <section class="stats-grid">
+
+               <article class="stat-card">
+
+    <div class="stat-icon files-icon">▤</div>
+
+    <p>Total Files</p>
+
+    <h3>{{ total_files }}</h3>
+
+    <small>
+        {% if total_files == 0 %}
+            No files uploaded yet
+        {% elif total_files == 1 %}
+            1 file stored in your vault
+        {% else %}
+            {{ total_files }} files stored in your vault
+        {% endif %}
+    </small>
+
+</article>
+
+                <article class="stat-card">
+
+                    <div class="stat-icon backup-icon">◷</div>
+
+                    <p>Available Backups</p>
+
+                    <h3>0</h3>
+
+                    <small>Your backups will appear here</small>
+
+                </article>
+
+                <article class="stat-card">
+
+                    <div class="stat-icon security-icon">♢</div>
+
+                    <p>Security Status</p>
+
+                    <h3>Account Active</h3>
+
+                    <small>Vault encryption not yet configured</small>
+
+                </article>
+
+            </section>
+
+            <!-- Files Section -->
+            <section class="content-panel" id="files">
+
+                <div class="panel-heading">
+
+                    <div>
+                        <h2>My Files</h2>
+                        <p>Your stored files will appear here.</p>
+                    </div>
+
+                    <form action="{{ url_for('upload_file') }}" method="POST" enctype="multipart/form-data">
+                        <input type="file" name="file" id="file" required>
+                        <button class="primary-button" type="submit">
+                            + Upload File
+                        </button>
+                    </form>
+
+                </div>
+
+                {% if files %}
+
+    <div class="file-list">
+
+        {% for file in files %}
+
+            <div class="file-item">
+
+                <div class="file-info">
+                    <div class="empty-icon">▤</div>
+
+                    <div>
+                        <h3>{{ file.name }}</h3>
+
+                        <p>
+                            {{ "%.2f"|format(file.size / 1024) }} KB
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+{% else %}
+
+    <div class="empty-state">
+
+        <div class="empty-icon">▤</div>
+
+        <h3>Your vault is ready for its next step</h3>
+
+        <p>Upload your first file to see it listed here.</p>
+
+    </div>
+
+{% endif %}
+
+            </section>
+
+            <!-- Backups Section -->
+            <section class="content-panel" id="backups">
+
+                <div class="panel-heading">
+
+                    <div>
+                        <h2>Recent Backups</h2>
+                        <p>Track your file backup activity.</p>
+                    </div>
+
+                </div>
+
+                <div class="empty-state compact-empty">
+
+                    <div class="empty-icon">◷</div>
+
+                    <h3>No backups yet</h3>
+
+                    <p>Your backup history will appear here.</p>
+
+                </div>
+
+            </section>
+
+            <!-- Footer -->
+            <footer class="dashboard-footer">
+
+                <span>SecureVault</span>
+
+                <span>Secure storage and recovery · In development</span>
+
+            </footer>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>

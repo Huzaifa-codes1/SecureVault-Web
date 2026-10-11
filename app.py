@@ -1,9 +1,19 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
+import os
+from datetime import datetime
 import sqlite3
+from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask import session
+
 app = Flask(__name__)
 app.secret_key = "local-development-key-change-before-deployment"
+
+# File upload configuration
+UPLOAD_FOLDER = os.path.join(app.root_path, "user_uploads")
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024  # 10 MB maximum
+
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
 # Connect to the SQLite database
@@ -35,6 +45,102 @@ def initialize_database():
 @app.route("/")
 def home():
     return render_template("index.html")
+
+
+# Dashboard
+@app.route("/dashboard")
+def dashboard():
+    if "user_id" not in session:
+        flash("Please log in to access your dashboard.", "error")
+        return redirect(url_for("login"))
+
+    connection = get_db_connection()
+
+    try:
+        user = connection.execute(
+            "SELECT username, email, created_at FROM users WHERE id = ?",
+            (session["user_id"],)
+        ).fetchone()
+    finally:
+        connection.close()
+
+    if user is None:
+        session.clear()
+        flash("Please log in again.", "error")
+        return redirect(url_for("login"))
+
+    user_folder = os.path.join(
+        app.config["UPLOAD_FOLDER"],
+        str(session["user_id"])
+    )
+
+    files = []
+
+    if os.path.isdir(user_folder):
+        for filename in os.listdir(user_folder):
+            file_path = os.path.join(user_folder, filename)
+
+            if os.path.isfile(file_path):
+                files.append({
+                    "name": filename,
+                    "size": os.path.getsize(file_path)
+                })
+
+    total_files = len(files)
+
+    return render_template(
+        "dashboard.html",
+        user=user,
+        files=files,
+        total_files=total_files
+    )
+
+# File upload
+@app.route("/upload", methods=["POST"])
+def upload_file():
+    # Make sure the user is logged in
+    if "user_id" not in session:
+        flash("Please log in before uploading files.", "error")
+        return redirect(url_for("login"))
+
+    # Check that a file was submitted
+    if "file" not in request.files:
+        flash("No file was selected.", "error")
+        return redirect(url_for("dashboard"))
+
+    file = request.files["file"]
+
+    if file.filename == "":
+        flash("Please select a file.", "error")
+        return redirect(url_for("dashboard"))
+
+    # Sanitize the filename
+    filename = secure_filename(file.filename)
+
+    if not filename:
+        flash("Invalid filename.", "error")
+        return redirect(url_for("dashboard"))
+
+    # Create a separate folder for each user
+    user_folder = os.path.join(
+        app.config["UPLOAD_FOLDER"],
+        str(session["user_id"])
+    )
+
+    os.makedirs(user_folder, exist_ok=True)
+
+    file_path = os.path.join(user_folder, filename)
+
+    # Prevent overwriting an existing file
+    if os.path.exists(file_path):
+        flash("A file with that name already exists.", "error")
+        return redirect(url_for("dashboard"))
+
+    # Save the uploaded file
+    file.save(file_path)
+
+    flash("File uploaded successfully!", "success")
+    return redirect(url_for("dashboard"))
 
 
 # User registration
@@ -95,7 +201,7 @@ def register():
     return render_template("register.html")
 
 
-# Login route
+# Login
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -113,6 +219,7 @@ def login():
                 "SELECT * FROM users WHERE email = ?",
                 (email,)
             ).fetchone()
+
         finally:
             connection.close()
 
@@ -126,9 +233,17 @@ def login():
         session["username"] = user["username"]
 
         flash("Login successful!", "success")
-        return redirect(url_for("home"))
+        return redirect(url_for("dashboard"))
 
     return render_template("login.html")
+
+
+# Logout
+@app.route("/logout", methods=["POST"])
+def logout():
+    session.clear()
+    flash("You have been logged out.", "success")
+    return redirect(url_for("login"))
 
 
 if __name__ == "__main__":
