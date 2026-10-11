@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SecureVault | Secure File Storage</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <header class="navbar">
+
+        <div class="logo">
+            🔐 SecureVault
+        </div>
+
+        <nav class="nav-links">
+            <a href="#home">Home</a>
+            <a href="#features">Features</a>
+            <a href="#about">About</a>
+        </nav>
+
+        <div class="nav-buttons">
+            <a href="/login" class="login-btn">Login</a>
+            <a href="/register" class="register-btn">Get Started</a>
+        </div>
+
+    </header>
+
+
+    <!-- Hero Section -->
+    <main>
+
+        <section class="hero" id="home">
+
+            <div class="hero-content">
+
+                <span class="badge">
+                    🔒 Client-Side Encrypted Storage
+                </span>
+
+                <h1>
+                    Your Files.<br>
+                    <span>Your Privacy.</span><br>
+                    Your Control.
+                </h1>
+
+                <p>
+                    SecureVault is designed to protect your sensitive
+                    files using client-side encryption, digital
+                    signatures, and secure vault management.
+                </p>
+
+                <div class="hero-buttons">
+
+                    <a href="/register" class="primary-btn">
+                        Create Your Vault →
+                    </a>
+
+                    <a href="#features" class="secondary-btn">
+                        Explore Features
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- Vault Card -->
+            <div class="hero-visual">
+
+                <div class="vault-card">
+
+                    <div class="lock-icon">🔐</div>
+
+                    <h2>SecureVault</h2>
+
+                    <p>Your Personal Encrypted File Vault</p>
+
+                    <div class="security-status">
+                        🛡️ Security Features In Development
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Features Section -->
+        <section class="features" id="features">
+
+            <h2>Powerful Security Features</h2>
+
+            <p class="section-description">
+                Multiple layers of protection for your digital files.
+            </p>
+
+            <div class="feature-container">
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+
+                    <h3>AES-256 Encryption</h3>
+
+                    <p>
+                        Encrypt files directly in your browser
+                        before uploading them to the server.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔑</div>
+
+                    <h3>Secure Vault Access</h3>
+
+                    <p>
+                        Protect your vault using an account
+                        password and a recovery key.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+
+                    <h3>Digital Signatures</h3>
+
+                    <p>
+                        Verify file integrity and authenticity
+                        using cryptographic digital signatures.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">☁️</div>
+
+                    <h3>Backup & Recovery</h3>
+
+                    <p>
+                        Restore encrypted files and important
+                        metadata from valid backups.
+                    </p>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- About Section -->
+        <section class="about" id="about">
+
+            <h2>Why SecureVault?</h2>
+
+            <p>
+                SecureVault is a privacy-focused file storage
+                application designed to demonstrate modern
+                information security techniques.
+
+                It combines encryption, authentication,
+                digital signatures, and backup mechanisms
+                to protect sensitive information.
+            </p>
+
+        </section>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer>
+
+        <p>
+            © 2026 SecureVault | Secure File Storage System
+        </p>
+
+    </footer>
+
+</body>
+</html>
